@@ -62,6 +62,7 @@ function ComputableDAGs.compute(
         state = state * data2.v
     end
 
+    #println("$(particle_species(p3)) with $(momentum(p3))")
     dataOut = ParticleValue(p3, state)
     return dataOut
 end
@@ -88,9 +89,18 @@ function ComputableDAGs.compute(
     P1<:ParticleStateful{D1,S1,EL},
     P2<:ParticleStateful{D2,S2,EL},
 }
-    #@assert isapprox(data1.p.momentum, data2.p.momentum, rtol = sqrt(eps()), atol = sqrt(eps())) "$(data1.p.momentum) vs. $(data2.p.momentum)"
+    inner1 = QED_inner_edge(data1.p)
+    inner2 = QED_inner_edge(data2.p)
 
-    inner = QED_inner_edge(propagated_particle(data1.p))
+    #=println(
+        "$(particle_direction(data1.p)): $(inner1[1, 1]), $(particle_direction(data2.p)): $(inner2[1, 1])",
+    )=#
+
+    # i'm pretty sure this is not universally true
+    inner = is_incoming(data1.p) ? inner1 : inner2
+    println("$(inner[1, 1])")
+
+    #@assert isapprox(inner1, inner2, rtol=sqrt(eps()), atol=sqrt(eps())) "$(data1.p) vs. $(data2.p)"
 
     # inner edge is just a "scalar", data1 and data2 are bispinor/adjointbispinnor, need to keep correct order
     if typeof(data1.v) <: BiSpinor
@@ -106,7 +116,12 @@ function ComputableDAGs.compute(
     data2::ParticleValue{ParticleStateful{D2,Photon},V2},
 ) where {D1<:ParticleDirection,D2<:ParticleDirection,V1<:ValueType,V2<:ValueType}
     # TODO: assert that data1 and data2 are opposites
+    @assert isapprox(
+        momentum(data1.p), momentum(data2.p), rtol=sqrt(eps()), atol=sqrt(eps())
+    ) "$(momentum(data1.p)) vs. $(momentum(data2.p))"
+
     inner = QED_inner_edge(data1.p)
+    #println("inner(s2): $(inner[1, 1])")
     # inner edge is just a scalar, data1 and data2 are photon states that are just Complex numbers here
     return data1.v * inner * data2.v
 end
@@ -119,12 +134,14 @@ Compute inner edge (1 input particle, 1 output particle).
 function ComputableDAGs.compute(
     ::ComputeTaskQED_S1, data::ParticleValue{P,V}
 ) where {P<:ParticleStateful,V<:ValueType}
+    inner = QED_inner_edge(data.p)
+    println("inner(s1): $(inner[1, 1])")
     new_p = propagated_particle(data.p)
     # inner edge is just a scalar, can multiply from either side
     if typeof(data.v) <: BiSpinor
-        return ParticleValue(new_p, QED_inner_edge(new_p) * data.v)
+        return ParticleValue(new_p, inner * data.v)
     else
-        return ParticleValue(new_p, data.v * QED_inner_edge(new_p))
+        return ParticleValue(new_p, data.v * inner)
     end
 end
 
@@ -138,6 +155,7 @@ Linearly many FLOP with growing data.
 """
 function ComputableDAGs.compute(::ComputeTaskQED_Sum, data...)::ComplexF64
     # TODO: want to use sum_kbn here but it doesn't seem to support ComplexF64, do it element-wise?
+    println("summing $data")
     s = 0.0im
     for d in data
         s += d

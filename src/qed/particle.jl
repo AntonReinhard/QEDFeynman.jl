@@ -225,7 +225,11 @@ Return the factor of a vertex in a QED feynman diagram.
 end
 
 @inline function QED_inner_edge(p::ParticleStateful)
-    return propagator(particle_species(p), momentum(p))
+    if is_outgoing(p)
+        return propagator(particle_species(p), momentum(p))
+    else
+        return propagator(particle_species(p), -momentum(p))
+    end
 end
 
 """
@@ -245,12 +249,18 @@ function QED_conserve_momentum(p1::AbstractParticleStateful, p2::AbstractParticl
     end
 
     p3_mom = p1_mom + p2_mom
-    if (particle_direction(P3) isa Incoming)
-        return parameterless(typeof(p1))(
-            particle_direction(P3), particle_species(P3), -p3_mom
-        )
+    if (is_incoming(particle_direction(P3)))
+        p3_mom *= -1
     end
-    return parameterless(typeof(p1))(particle_direction(P3), particle_species(P3), p3_mom)
+
+    p3 = parameterless(typeof(p1))(particle_direction(P3), particle_species(P3), p3_mom)
+
+    #=print("$(is_incoming(p1) ? "in" : "out") $(particle_species(p1)) + ")
+    print("$(is_incoming(p2) ? "in" : "out") $(particle_species(p2)) -> ")
+    println("$(is_incoming(p3) ? "in" : "out") $(particle_species(p3))")
+    println("$(momentum(p1)[1]) + $(momentum(p2)[1]) -> $(p3_mom[1])")=#
+
+    return p3
 end
 
 """
