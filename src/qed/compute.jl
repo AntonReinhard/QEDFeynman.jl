@@ -51,18 +51,22 @@ function ComputableDAGs.compute(
 ) where {P1<:ParticleStateful,P2<:ParticleStateful,V1<:ValueType,V2<:ValueType}
     p3 = QED_conserve_momentum(data1.p, data2.p)
     state = QED_vertex()
-    if (typeof(data1.v) <: AdjointBiSpinor)
-        state = data1.v * state
+    if data1.v isa AdjointBiSpinor
+        @assert !(data2.v isa AdjointBiSpinor)
+        state = data1.v * state * data2.v
+    elseif data1.v isa BiSpinor
+        @assert !(data2.v isa BiSpinor)
+        state = data2.v * state * data1.v
+    elseif data2.v isa AdjointBiSpinor
+        @assert !(data1.v isa AdjointBiSpinor)
+        state = data2.v * state * data1.v
+    elseif data2.v isa BiSpinor
+        @assert !(data1.v isa BiSpinor)
+        state = data1.v * state * data2.v
     else
-        state = state * data1.v
-    end
-    if (typeof(data2.v) <: AdjointBiSpinor)
-        state = data2.v * state
-    else
-        state = state * data2.v
+        @assert "invalid V task inputs"
     end
 
-    #println("$(particle_species(p3)) with $(momentum(p3))")
     dataOut = ParticleValue(p3, state)
     return dataOut
 end
@@ -92,15 +96,9 @@ function ComputableDAGs.compute(
     inner1 = QED_inner_edge(data1.p)
     inner2 = QED_inner_edge(data2.p)
 
-    #=println(
-        "$(particle_direction(data1.p)): $(inner1[1, 1]), $(particle_direction(data2.p)): $(inner2[1, 1])",
-    )=#
-
-    # i'm pretty sure this is not universally true
-    inner = is_incoming(data1.p) ? inner1 : inner2
-    println("$(inner[1, 1])")
-
-    #@assert isapprox(inner1, inner2, rtol=sqrt(eps()), atol=sqrt(eps())) "$(data1.p) vs. $(data2.p)"
+    # TODO: This is broken. It's currently not possible (i think) to find out which of the two is the correct
+    # inner edge value to take. Likely the graph building has to be changed to provide the correct one first or similar.
+    inner = is_outgoing(data1.p) ? inner1 : inner2
 
     # inner edge is just a "scalar", data1 and data2 are bispinor/adjointbispinnor, need to keep correct order
     if typeof(data1.v) <: BiSpinor
@@ -121,8 +119,7 @@ function ComputableDAGs.compute(
     ) "$(momentum(data1.p)) vs. $(momentum(data2.p))"
 
     inner = QED_inner_edge(data1.p)
-    #println("inner(s2): $(inner[1, 1])")
-    # inner edge is just a scalar, data1 and data2 are photon states that are just Complex numbers here
+
     return data1.v * inner * data2.v
 end
 
@@ -135,7 +132,6 @@ function ComputableDAGs.compute(
     ::ComputeTaskQED_S1, data::ParticleValue{P,V}
 ) where {P<:ParticleStateful,V<:ValueType}
     inner = QED_inner_edge(data.p)
-    println("inner(s1): $(inner[1, 1])")
     new_p = propagated_particle(data.p)
     # inner edge is just a scalar, can multiply from either side
     if typeof(data.v) <: BiSpinor
@@ -149,25 +145,24 @@ end
     compute(::ComputeTaskQED_Sum, data...)
     compute(::ComputeTaskQED_Sum, data::AbstractArray)
 
-Compute a sum over the vector. Use an algorithm that accounts for accumulated errors in long sums with potentially large differences in magnitude of the summands.
+Compute a sum over the vector and return the `abs2()` of it.
 
 Linearly many FLOP with growing data.
 """
-function ComputableDAGs.compute(::ComputeTaskQED_Sum, data...)::ComplexF64
+function ComputableDAGs.compute(::ComputeTaskQED_Sum, data...)
     # TODO: want to use sum_kbn here but it doesn't seem to support ComplexF64, do it element-wise?
-    println("summing $data")
     s = 0.0im
     for d in data
         s += d
     end
-    return s
+    return abs2(s)
 end
 
-function ComputableDAGs.compute(::ComputeTaskQED_Sum, data::AbstractArray)::ComplexF64
+function ComputableDAGs.compute(::ComputeTaskQED_Sum, data::AbstractArray)
     # TODO: want to use sum_kbn here but it doesn't seem to support ComplexF64, do it element-wise?
     s = 0.0im
     for d in data
         s += d
     end
-    return s
+    return abs2(s)
 end
