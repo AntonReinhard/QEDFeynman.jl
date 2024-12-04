@@ -49,11 +49,11 @@ function gen_process_input(processDescription::ScatteringProcess)
 end
 
 """
-    gen_graph(process_description::ScatteringProcess)
+    graph(process_description::ScatteringProcess)
 
 For a given `QEDprocesses.ScatteringProcess`, return the `DAG` that computes it.
 """
-function gen_graph(process_description::ScatteringProcess)
+function ComputableDAGs.graph(process_description::ScatteringProcess)
     initial_diagram = FeynmanDiagram(process_description)
     diagrams = gen_diagrams(initial_diagram)
 

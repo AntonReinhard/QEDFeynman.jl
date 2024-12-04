@@ -34,7 +34,7 @@ export ComputeTaskQED_S2
 export ComputeTaskQED_V
 export ComputeTaskQED_U
 export ComputeTaskQED_Sum
-export gen_graph
+export graph
 
 export ParticleValue, ParticleValueSP
 

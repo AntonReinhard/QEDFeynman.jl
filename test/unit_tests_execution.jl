@@ -150,12 +150,12 @@ end
 @testset "$(process) after random walk" for process in ["ke->ke", "ke->kke", "ke->kkke"]
     process = parse_process("ke->kkke", QEDModel())
     inputs = [gen_process_input(process) for _ in 1:100]
-    graph = gen_graph(process)
+    graph = graph(process)
 
     f_gt = get_compute_function(graph, process, machine, @__MODULE__)
     gt = f_gt.(inputs)
     for i in 1:50
-        graph = gen_graph(process)
+        graph = graph(process)
 
         optimize!(RandomWalkOptimizer(RNG), graph, 100)
         @test is_valid(graph)

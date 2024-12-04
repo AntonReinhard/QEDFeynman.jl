@@ -260,7 +260,7 @@ end
     compton_function = get_compute_function(graph, process, machine, @__MODULE__)
     @test isapprox(compton_function.(input), compton_groundtruth.(input))
 
-    graph_generated = gen_graph(process)
+    graph_generated = graph(process)
 
     compton_function = get_compute_function(graph_generated, process, machine, @__MODULE__)
     @test isapprox(compton_function.(input), compton_groundtruth.(input))
@@ -274,7 +274,7 @@ end
         model = QEDModel()
         process = parse_process(proc_str, model)
         machine = cpu_st()
-        graph = gen_graph(process)
+        graph = graph(process)
 
         compute_function = get_compute_function(graph, process, machine, @__MODULE__)
 
