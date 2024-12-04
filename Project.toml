@@ -6,8 +6,8 @@ version = "0.1.0"
 [deps]
 AccurateArithmetic = "22286c92-06ac-501d-9306-4abd417d9753"
 Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
-ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 ComputableDAGs = "62933717-1c9d-4a3f-b06f-7ab7f17ca32d"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 QEDbase = "10e22c08-3ccb-4172-bfcf-7d7aa3d04d93"
 QEDcore = "35dc0263-cb5f-4c33-a114-1d7f54ab753e"
 QEDprocesses = "46de9c38-1bb3-4547-a1ec-da24d767fdad"
@@ -16,6 +16,11 @@ Roots = "f2b01f46-fcfa-551c-844a-d8ac1e96c665"
 RuntimeGeneratedFunctions = "7e49a35a-f44a-4d26-94aa-eba1b4ca6b47"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 TypeUtils = "c3b1956e-8857-4d84-9b79-890df85b1e67"
+
+[compat]
+ComputableDAGs = "0.1.1"
+QEDbase = "0.3"
+QEDcore = "0.2"
 
 [extras]
 ComputableDAGs = "62933717-1c9d-4a3f-b06f-7ab7f17ca32d"

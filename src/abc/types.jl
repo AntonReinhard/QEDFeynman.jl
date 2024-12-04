@@ -6,11 +6,11 @@ Singleton definition for identification of the ABC-Model.
 struct ABCModel <: AbstractPhysicsModel end
 
 """
-    PerturbativeABC <: AbstractModel
+    PerturbativeABC <: AbstractModelDefinition
 
 The model being used for the ABC model.
 """
-struct PerturbativeABC <: AbstractModelDefinition end
+struct PerturbativeABC <: QEDbase.AbstractModelDefinition end
 
 """
     ABCParticle

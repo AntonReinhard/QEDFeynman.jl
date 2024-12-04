@@ -69,7 +69,7 @@ function gen_graph(process_description::ScatteringProcess)
     insert_edge!(graph, sum_node, global_data_out)
 
     # remember the data out nodes for connection
-    dataOutNodes = Dict()
+    data_out_nodes = Dict()
 
     for particle in initial_diagram.particles
         # generate data in and U tasks
@@ -81,7 +81,7 @@ function gen_graph(process_description::ScatteringProcess)
         insert_edge!(graph, compute_u, data_out)
 
         # remember the data_out node for future edges
-        dataOutNodes[String(particle)] = data_out
+        data_out_nodes[String(particle)] = data_out
     end
 
     # TODO: this should be parallelizable somewhat easily
@@ -91,8 +91,8 @@ function gen_graph(process_description::ScatteringProcess)
         # handle the vertices
         for vertices in diagram.vertices
             for vertex in vertices
-                data_in1 = dataOutNodes[String(vertex.in1)]
-                data_in2 = dataOutNodes[String(vertex.in2)]
+                data_in1 = data_out_nodes[String(vertex.in1)]
+                data_in2 = data_out_nodes[String(vertex.in2)]
 
                 compute_V = insert_node!(graph, ComputeTaskQED_V()) # compute vertex
 
@@ -105,7 +105,7 @@ function gen_graph(process_description::ScatteringProcess)
 
                 if (vertex.out == tie.in1 || vertex.out == tie.in2)
                     # out particle is part of the tie -> there will be an S2 task with it later, don't make S1 task
-                    dataOutNodes[String(vertex.out)] = data_V_out
+                    data_out_nodes[String(vertex.out)] = data_V_out
                     continue
                 end
 
@@ -119,13 +119,13 @@ function gen_graph(process_description::ScatteringProcess)
                 insert_edge!(graph, compute_S1, data_S1_out)
 
                 # overrides potentially different nodes from previous diagrams, which is intentional
-                dataOutNodes[String(vertex.out)] = data_S1_out
+                data_out_nodes[String(vertex.out)] = data_S1_out
             end
         end
 
         # handle the tie
-        data_in1 = dataOutNodes[String(tie.in1)]
-        data_in2 = dataOutNodes[String(tie.in2)]
+        data_in1 = data_out_nodes[String(tie.in1)]
+        data_in2 = data_out_nodes[String(tie.in2)]
 
         compute_S2 = insert_node!(graph, ComputeTaskQED_S2())
 

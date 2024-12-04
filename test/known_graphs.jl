@@ -31,10 +31,10 @@ function test_random_walk(RNG, g::DAG, n::Int64)
 
                 # choose one of split/reduce
                 option = rand(RNG, 1:2)
-                if option == 1 && !isempty(opt.nodeReductions)
-                    push_operation!(g, rand(RNG, collect(opt.nodeReductions)))
-                elseif option == 2 && !isempty(opt.nodeSplits)
-                    push_operation!(g, rand(RNG, collect(opt.nodeSplits)))
+                if option == 1 && !isempty(opt.node_reductions)
+                    push_operation!(g, rand(RNG, collect(opt.node_reductions)))
+                elseif option == 2 && !isempty(opt.node_splits)
+                    push_operation!(g, rand(RNG, collect(opt.node_splits)))
                 else
                     i = i - 1
                 end

@@ -5,7 +5,7 @@ import QEDbase.AbstractParticle
 
 Base type for a model, e.g. ABC-Model or QED. This is used to dispatch many functions.
 """
-abstract type AbstractPhysicsModel <: AbstractModel end
+abstract type AbstractPhysicsModel end
 
 """
     ParticleValue{ParticleType <: AbstractParticleStateful}
@@ -99,9 +99,9 @@ Return the model of this process description or input.
 function model end
 
 """
-    type_from_name(model::AbstractModel, name::String)
+    type_from_name(model::AbstractPhysicsModel, name::String)
 
-For a name of a particle in the given `AbstractModel`, return the particle's `Type` and index as a tuple. The input string can be expetced to be of the form \"<name><index>\".
+For a name of a particle in the given `AbstractPhysicsModel`, return the particle's `Type` and index as a tuple. The input string can be expetced to be of the form \"<name><index>\".
 """
 function type_index_from_name end
 

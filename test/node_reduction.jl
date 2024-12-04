@@ -58,32 +58,32 @@ insert_edge!(graph, CD, C1C)
 
 opt = get_operations(graph)
 
-@test length(opt) == (nodeReductions=1, nodeSplits=1)
+@test length(opt) == (node_reductions=1, node_splits=1)
 
-nr = first(opt.nodeReductions)
+nr = first(opt.node_reductions)
 @test Set(nr.input) == Set([B1C_1, B1C_2])
 push_operation!(graph, nr)
 opt = get_operations(graph)
 
-@test length(opt) == (nodeReductions=1, nodeSplits=1)
+@test length(opt) == (node_reductions=1, node_splits=1)
 
-nr = first(opt.nodeReductions)
+nr = first(opt.node_reductions)
 @test Set(nr.input) == Set([B1D_1, B1D_2])
 push_operation!(graph, nr)
 opt = get_operations(graph)
 
 @test is_valid(graph)
 
-@test length(opt) == (nodeReductions=0, nodeSplits=1)
+@test length(opt) == (node_reductions=0, node_splits=1)
 
 pop_operation!(graph)
 
 opt = get_operations(graph)
-@test length(opt) == (nodeReductions=1, nodeSplits=1)
+@test length(opt) == (node_reductions=1, node_splits=1)
 
 reset_graph!(graph)
 
 opt = get_operations(graph)
-@test length(opt) == (nodeReductions=1, nodeSplits=1)
+@test length(opt) == (node_reductions=1, node_splits=1)
 
 @test is_valid(graph)
