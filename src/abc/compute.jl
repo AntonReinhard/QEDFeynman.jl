@@ -19,19 +19,6 @@ function ComputableDAGs.input_expr(
 end
 
 """
-    compute(::ComputeTaskABC_P, data::ParticleValue)
-
-Return the particle and value as is. 
-
-0 FLOP.
-"""
-function ComputableDAGs.compute(
-    ::ComputeTaskABC_P, data::ParticleValue{P}
-)::ParticleValue{P} where {P}
-    return data
-end
-
-"""
     compute(::ComputeTaskABC_U, data::ParticleValue)
 
 Compute an outer edge. Return the particle value with the same particle and the value multiplied by an ABC_outer_edge factor.

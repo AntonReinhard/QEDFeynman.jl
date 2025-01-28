@@ -52,7 +52,7 @@ function test_op(estimator, graph, op)
 end
 
 @testset "Global Metric Estimator" for (graph_string, exp_data, exp_compute_effort) in
-                                       zip(["AB->AB", "AB->ABBB"], [976, 10944], [53, 1075])
+                                       zip(["AB->AB", "AB->ABBB"], [784, 10656], [53, 1075])
     estimator = GlobalMetricEstimator()
 
     @test cost_type(estimator) == CDCost

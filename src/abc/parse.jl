@@ -116,14 +116,10 @@ function parse_dag(filename::AbstractString, proc::GenericABCProcess, verbose::B
 
             # add nodes and edges for the state reading to u(P(Particle))
             data_in = insert_node!(graph, DataTask(PARTICLE_VALUE_SIZE), name) # read particle data node
-            compute_P = insert_node!(graph, ComputeTaskABC_P()) # compute P node
-            data_Pu = insert_node!(graph, DataTask(PARTICLE_VALUE_SIZE)) # transfer data from P to u (one ParticleValue object)
             compute_u = insert_node!(graph, ComputeTaskABC_U()) # compute U node
             data_out = insert_node!(graph, DataTask(PARTICLE_VALUE_SIZE)) # transfer data out from u (one ParticleValue object)
 
-            insert_edge!(graph, data_in, compute_P)
-            insert_edge!(graph, compute_P, data_Pu)
-            insert_edge!(graph, data_Pu, compute_u)
+            insert_edge!(graph, data_in, compute_u)
             insert_edge!(graph, compute_u, data_out)
 
             # remember the data_out node for future edges

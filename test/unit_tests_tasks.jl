@@ -5,7 +5,6 @@ S1 = QEDFeynman.ComputeTaskABC_S1()
 S2 = QEDFeynman.ComputeTaskABC_S2()
 U = QEDFeynman.ComputeTaskABC_U()
 V = QEDFeynman.ComputeTaskABC_V()
-P = QEDFeynman.ComputeTaskABC_P()
 Sum = QEDFeynman.ComputeTaskABC_Sum()
 
 Data10 = DataTask(10)
@@ -15,7 +14,6 @@ Data20 = DataTask(20)
 @test compute_effort(S2) == 12
 @test compute_effort(U) == 1
 @test compute_effort(V) == 6
-@test compute_effort(P) == 0
 @test compute_effort(Sum) == 1
 @test compute_effort(Data10) == 0
 @test compute_effort(Data20) == 0
@@ -24,7 +22,6 @@ Data20 = DataTask(20)
 @test data(S2) == 0
 @test data(U) == 0
 @test data(V) == 0
-@test data(P) == 0
 @test data(Sum) == 0
 @test data(Data10) == 10
 @test data(Data20) == 20

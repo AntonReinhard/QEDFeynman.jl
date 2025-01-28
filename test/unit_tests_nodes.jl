@@ -3,7 +3,7 @@ using ComputableDAGs
 
 nC1 = make_node(QEDFeynman.ComputeTaskABC_U())
 nC2 = make_node(QEDFeynman.ComputeTaskABC_V())
-nC3 = make_node(QEDFeynman.ComputeTaskABC_P())
+nC3 = make_node(QEDFeynman.ComputeTaskABC_S1())
 nC4 = make_node(QEDFeynman.ComputeTaskABC_Sum())
 
 nD1 = make_node(DataTask(10))

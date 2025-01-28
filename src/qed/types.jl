@@ -20,13 +20,6 @@ S task with two children.
 struct ComputeTaskQED_S2 <: AbstractComputeTask end
 
 """
-    ComputeTaskQED_P <: AbstractComputeTask
-
-P task with no children.
-"""
-struct ComputeTaskQED_P <: AbstractComputeTask end
-
-"""
     ComputeTaskQED_V <: AbstractComputeTask
 
 v task with two children.
@@ -57,7 +50,6 @@ Constant vector of all tasks of the QED-Model.
 QED_TASKS = [
     ComputeTaskQED_S1,
     ComputeTaskQED_S2,
-    ComputeTaskQED_P,
     ComputeTaskQED_V,
     ComputeTaskQED_U,
     ComputeTaskQED_Sum,

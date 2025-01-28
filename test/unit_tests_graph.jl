@@ -42,42 +42,20 @@ uA = insert_node!(graph, ComputeTaskABC_U())
 uBp = insert_node!(graph, ComputeTaskABC_U())
 uAp = insert_node!(graph, ComputeTaskABC_U())
 
-# data from PB, PA, PBp and PAp to uB, uA, uBp and uAp
-d_PB_uB = insert_node!(graph, DataTask(6))
-d_PA_uA = insert_node!(graph, DataTask(6))
-d_PBp_uBp = insert_node!(graph, DataTask(6))
-d_PAp_uAp = insert_node!(graph, DataTask(6))
+# entry nodes getting data for U computes
+d_uB = insert_node!(graph, DataTask(6))
+d_uA = insert_node!(graph, DataTask(6))
+d_uBp = insert_node!(graph, DataTask(6))
+d_uAp = insert_node!(graph, DataTask(6))
 
-# P computes PB, PA, PBp and PAp
-PB = insert_node!(graph, ComputeTaskABC_P())
-PA = insert_node!(graph, ComputeTaskABC_P())
-PBp = insert_node!(graph, ComputeTaskABC_P())
-PAp = insert_node!(graph, ComputeTaskABC_P())
-
-# entry nodes getting data for P computes
-d_PB = insert_node!(graph, DataTask(4))
-d_PA = insert_node!(graph, DataTask(4))
-d_PBp = insert_node!(graph, DataTask(4))
-d_PAp = insert_node!(graph, DataTask(4))
-
-@test length(graph.nodes) == 26
+@test length(graph.nodes) == 18
 @test length(graph.dirty_nodes) == 0
 
 # now for all the edges
-insert_edge!(graph, d_PB, PB)
-insert_edge!(graph, d_PA, PA)
-insert_edge!(graph, d_PBp, PBp)
-insert_edge!(graph, d_PAp, PAp)
-
-insert_edge!(graph, PB, d_PB_uB)
-insert_edge!(graph, PA, d_PA_uA)
-insert_edge!(graph, PBp, d_PBp_uBp)
-insert_edge!(graph, PAp, d_PAp_uAp)
-
-insert_edge!(graph, d_PB_uB, uB)
-insert_edge!(graph, d_PA_uA, uA)
-insert_edge!(graph, d_PBp_uBp, uBp)
-insert_edge!(graph, d_PAp_uAp, uAp)
+insert_edge!(graph, d_uB, uB)
+insert_edge!(graph, d_uA, uA)
+insert_edge!(graph, d_uBp, uBp)
+insert_edge!(graph, d_uAp, uAp)
 
 insert_edge!(graph, uB, d_uB_v0)
 insert_edge!(graph, uA, d_uA_v0)
@@ -97,7 +75,7 @@ insert_edge!(graph, d_v1_s0, s0)
 
 insert_edge!(graph, s0, d_exit)
 
-@test length(graph.nodes) == 26
+@test length(graph.nodes) == 18
 @test length(graph.applied_operations) == 0
 @test length(graph.operations_to_apply) == 0
 @test length(graph.dirty_nodes) == 0
