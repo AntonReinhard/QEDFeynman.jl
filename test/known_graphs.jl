@@ -5,7 +5,7 @@ using Random
 RNG = Random.MersenneTwister(321)
 
 function test_known_graph(name::String, n)
-    @testset "Test $name Graph ($n)" begin
+    return @testset "Test $name Graph ($n)" begin
         proc = parse_process(name, ABCModel())
         graph = parse_dag(joinpath(@__DIR__, "..", "input", "$name.txt"), proc)
         props = get_properties(graph)
@@ -15,7 +15,7 @@ function test_known_graph(name::String, n)
 end
 
 function test_random_walk(RNG, g::DAG, n::Int64)
-    @testset "Test Random Walk ($n)" begin
+    return @testset "Test Random Walk ($n)" begin
         # the purpose here is to do "random" operations and reverse them again and validate that the graph stays the same and doesn't diverge
         reset_graph!(g)
 

@@ -1,6 +1,6 @@
 name: unit_tests
 
-on: 
+on:
   push:
     branches:
       - main

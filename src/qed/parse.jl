@@ -4,13 +4,13 @@
 Parse a string representation of a process, such as "ke->ke" into the corresponding `QEDProcessDescription`.
 """
 function parse_process(
-    str::AbstractString,
-    model::QEDModel,
-    inphpol::AbstractDefinitePolarization=PolX(),
-    inelspin::AbstractDefiniteSpin=SpinUp(),
-    outphpol::AbstractDefinitePolarization=PolX(),
-    outelspin::AbstractDefiniteSpin=SpinUp(),
-)
+        str::AbstractString,
+        model::QEDModel,
+        inphpol::AbstractDefinitePolarization = PolX(),
+        inelspin::AbstractDefiniteSpin = SpinUp(),
+        outphpol::AbstractDefinitePolarization = PolX(),
+        outelspin::AbstractDefiniteSpin = SpinUp(),
+    )
     if !(contains(str, "->"))
         throw("Did not find -> while parsing process \"$str\"")
     end
@@ -42,13 +42,13 @@ function parse_process(
     in_spin_pols = tuple(
         [
             is_boson(incoming_particles[i]) ? inphpol : inelspin for
-            i in eachindex(incoming_particles)
+                i in eachindex(incoming_particles)
         ]...,
     )
     out_spin_pols = tuple(
         [
             is_boson(outgoing_particles[i]) ? outphpol : outelspin for
-            i in eachindex(outgoing_particles)
+                i in eachindex(outgoing_particles)
         ]...,
     )
 

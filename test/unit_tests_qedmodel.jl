@@ -18,21 +18,21 @@ def_momentum = SFourMomentum(1.0, 0.0, 0.0, 0.0)
 RNG = Random.MersenneTwister(0)
 
 testparticleTypes = [
-    ParticleStateful{Incoming,Photon,SFourMomentum},
-    ParticleStateful{Outgoing,Photon,SFourMomentum},
-    ParticleStateful{Incoming,Electron,SFourMomentum},
-    ParticleStateful{Outgoing,Electron,SFourMomentum},
-    ParticleStateful{Incoming,Positron,SFourMomentum},
-    ParticleStateful{Outgoing,Positron,SFourMomentum},
+    ParticleStateful{Incoming, Photon, SFourMomentum},
+    ParticleStateful{Outgoing, Photon, SFourMomentum},
+    ParticleStateful{Incoming, Electron, SFourMomentum},
+    ParticleStateful{Outgoing, Electron, SFourMomentum},
+    ParticleStateful{Incoming, Positron, SFourMomentum},
+    ParticleStateful{Outgoing, Positron, SFourMomentum},
 ]
 
 testparticleTypesPropagated = [
-    ParticleStateful{Outgoing,Photon,SFourMomentum},
-    ParticleStateful{Incoming,Photon,SFourMomentum},
-    ParticleStateful{Outgoing,Electron,SFourMomentum},
-    ParticleStateful{Incoming,Electron,SFourMomentum},
-    ParticleStateful{Outgoing,Positron,SFourMomentum},
-    ParticleStateful{Incoming,Positron,SFourMomentum},
+    ParticleStateful{Outgoing, Photon, SFourMomentum},
+    ParticleStateful{Incoming, Photon, SFourMomentum},
+    ParticleStateful{Outgoing, Electron, SFourMomentum},
+    ParticleStateful{Incoming, Electron, SFourMomentum},
+    ParticleStateful{Outgoing, Positron, SFourMomentum},
+    ParticleStateful{Incoming, Positron, SFourMomentum},
 ]
 
 function compton_groundtruth(input::PhaseSpacePoint)
@@ -145,7 +145,7 @@ end
             @test isapprox(
                 sum(momenta(input, Incoming())),
                 sum(momenta(input, Outgoing()));
-                atol=sqrt(eps()),
+                atol = sqrt(eps()),
             )
         end
     end
@@ -157,134 +157,134 @@ end
     process = parse_process("ke->ke", model)
     machine = cpu_st()
 
-    graph = DAG()
+    dag = DAG()
 
-    # manually build a graph for compton
-    graph = DAG()
+    # manually build a dag for compton
+    dag = DAG()
 
     # s to output (exit node)
-    d_exit = insert_node!(graph, DataTask(16))
+    d_exit = insert_node!(dag, DataTask(16))
 
-    sum_node = insert_node!(graph, ComputeTaskQED_Sum(2))
+    sum_node = insert_node!(dag, ComputeTaskQED_Sum(2))
 
-    d_s0_sum = insert_node!(graph, DataTask(16))
-    d_s1_sum = insert_node!(graph, DataTask(16))
+    d_s0_sum = insert_node!(dag, DataTask(16))
+    d_s1_sum = insert_node!(dag, DataTask(16))
 
     # final s compute
-    s0 = insert_node!(graph, ComputeTaskQED_S2())
-    s1 = insert_node!(graph, ComputeTaskQED_S2())
+    s0 = insert_node!(dag, ComputeTaskQED_S2())
+    s1 = insert_node!(dag, ComputeTaskQED_S2())
 
     # data from v0 and v1 to s0
-    d_v0_s0 = insert_node!(graph, DataTask(96))
-    d_v1_s0 = insert_node!(graph, DataTask(96))
-    d_v2_s1 = insert_node!(graph, DataTask(96))
-    d_v3_s1 = insert_node!(graph, DataTask(96))
+    d_v0_s0 = insert_node!(dag, DataTask(96))
+    d_v1_s0 = insert_node!(dag, DataTask(96))
+    d_v2_s1 = insert_node!(dag, DataTask(96))
+    d_v3_s1 = insert_node!(dag, DataTask(96))
 
     # v0 and v1 compute
-    v0 = insert_node!(graph, ComputeTaskQED_V())
-    v1 = insert_node!(graph, ComputeTaskQED_V())
-    v2 = insert_node!(graph, ComputeTaskQED_V())
-    v3 = insert_node!(graph, ComputeTaskQED_V())
+    v0 = insert_node!(dag, ComputeTaskQED_V())
+    v1 = insert_node!(dag, ComputeTaskQED_V())
+    v2 = insert_node!(dag, ComputeTaskQED_V())
+    v3 = insert_node!(dag, ComputeTaskQED_V())
 
     # data from uPhIn, uPhOut, uElIn, uElOut to v0 and v1
-    d_uPhIn_v0 = insert_node!(graph, DataTask(96))
-    d_uElIn_v0 = insert_node!(graph, DataTask(96))
-    d_uPhOut_v1 = insert_node!(graph, DataTask(96))
-    d_uElOut_v1 = insert_node!(graph, DataTask(96))
+    d_uPhIn_v0 = insert_node!(dag, DataTask(96))
+    d_uElIn_v0 = insert_node!(dag, DataTask(96))
+    d_uPhOut_v1 = insert_node!(dag, DataTask(96))
+    d_uElOut_v1 = insert_node!(dag, DataTask(96))
 
     # data from uPhIn, uPhOut, uElIn, uElOut to v2 and v3
-    d_uPhOut_v2 = insert_node!(graph, DataTask(96))
-    d_uElIn_v2 = insert_node!(graph, DataTask(96))
-    d_uPhIn_v3 = insert_node!(graph, DataTask(96))
-    d_uElOut_v3 = insert_node!(graph, DataTask(96))
+    d_uPhOut_v2 = insert_node!(dag, DataTask(96))
+    d_uElIn_v2 = insert_node!(dag, DataTask(96))
+    d_uPhIn_v3 = insert_node!(dag, DataTask(96))
+    d_uElOut_v3 = insert_node!(dag, DataTask(96))
 
     # uPhIn, uPhOut, uElIn and uElOut computes
-    uPhIn = insert_node!(graph, ComputeTaskQED_U())
-    uPhOut = insert_node!(graph, ComputeTaskQED_U())
-    uElIn = insert_node!(graph, ComputeTaskQED_U())
-    uElOut = insert_node!(graph, ComputeTaskQED_U())
+    uPhIn = insert_node!(dag, ComputeTaskQED_U())
+    uPhOut = insert_node!(dag, ComputeTaskQED_U())
+    uElIn = insert_node!(dag, ComputeTaskQED_U())
+    uElOut = insert_node!(dag, ComputeTaskQED_U())
 
     # data into U
-    d_uPhIn = insert_node!(graph, DataTask(16), "ki1")
-    d_uPhOut = insert_node!(graph, DataTask(16), "ko1")
-    d_uElIn = insert_node!(graph, DataTask(16), "ei1")
-    d_uElOut = insert_node!(graph, DataTask(16), "eo1")
+    d_uPhIn = insert_node!(dag, DataTask(16), "ki1")
+    d_uPhOut = insert_node!(dag, DataTask(16), "ko1")
+    d_uElIn = insert_node!(dag, DataTask(16), "ei1")
+    d_uElOut = insert_node!(dag, DataTask(16), "eo1")
 
     # now for all the edges
-    insert_edge!(graph, d_uPhIn, uPhIn)
-    insert_edge!(graph, d_uPhOut, uPhOut)
-    insert_edge!(graph, d_uElIn, uElIn)
-    insert_edge!(graph, d_uElOut, uElOut)
+    insert_edge!(dag, d_uPhIn, uPhIn)
+    insert_edge!(dag, d_uPhOut, uPhOut)
+    insert_edge!(dag, d_uElIn, uElIn)
+    insert_edge!(dag, d_uElOut, uElOut)
 
-    insert_edge!(graph, uPhIn, d_uPhIn_v0)
-    insert_edge!(graph, uPhOut, d_uPhOut_v1)
-    insert_edge!(graph, uElIn, d_uElIn_v0)
-    insert_edge!(graph, uElOut, d_uElOut_v1)
+    insert_edge!(dag, uPhIn, d_uPhIn_v0)
+    insert_edge!(dag, uPhOut, d_uPhOut_v1)
+    insert_edge!(dag, uElIn, d_uElIn_v0)
+    insert_edge!(dag, uElOut, d_uElOut_v1)
 
-    insert_edge!(graph, uPhIn, d_uPhIn_v3)
-    insert_edge!(graph, uPhOut, d_uPhOut_v2)
-    insert_edge!(graph, uElIn, d_uElIn_v2)
-    insert_edge!(graph, uElOut, d_uElOut_v3)
+    insert_edge!(dag, uPhIn, d_uPhIn_v3)
+    insert_edge!(dag, uPhOut, d_uPhOut_v2)
+    insert_edge!(dag, uElIn, d_uElIn_v2)
+    insert_edge!(dag, uElOut, d_uElOut_v3)
 
-    insert_edge!(graph, d_uPhIn_v0, v0)
-    insert_edge!(graph, d_uPhOut_v1, v1)
-    insert_edge!(graph, d_uElIn_v0, v0)
-    insert_edge!(graph, d_uElOut_v1, v1)
+    insert_edge!(dag, d_uPhIn_v0, v0)
+    insert_edge!(dag, d_uPhOut_v1, v1)
+    insert_edge!(dag, d_uElIn_v0, v0)
+    insert_edge!(dag, d_uElOut_v1, v1)
 
-    insert_edge!(graph, d_uPhIn_v3, v3)
-    insert_edge!(graph, d_uPhOut_v2, v2)
-    insert_edge!(graph, d_uElIn_v2, v2)
-    insert_edge!(graph, d_uElOut_v3, v3)
+    insert_edge!(dag, d_uPhIn_v3, v3)
+    insert_edge!(dag, d_uPhOut_v2, v2)
+    insert_edge!(dag, d_uElIn_v2, v2)
+    insert_edge!(dag, d_uElOut_v3, v3)
 
-    insert_edge!(graph, v0, d_v0_s0)
-    insert_edge!(graph, v1, d_v1_s0)
-    insert_edge!(graph, v2, d_v2_s1)
-    insert_edge!(graph, v3, d_v3_s1)
+    insert_edge!(dag, v0, d_v0_s0)
+    insert_edge!(dag, v1, d_v1_s0)
+    insert_edge!(dag, v2, d_v2_s1)
+    insert_edge!(dag, v3, d_v3_s1)
 
-    insert_edge!(graph, d_v0_s0, s0)
-    insert_edge!(graph, d_v1_s0, s0)
+    insert_edge!(dag, d_v0_s0, s0)
+    insert_edge!(dag, d_v1_s0, s0)
 
-    insert_edge!(graph, d_v2_s1, s1)
-    insert_edge!(graph, d_v3_s1, s1)
+    insert_edge!(dag, d_v2_s1, s1)
+    insert_edge!(dag, d_v3_s1, s1)
 
-    insert_edge!(graph, s0, d_s0_sum)
-    insert_edge!(graph, s1, d_s1_sum)
+    insert_edge!(dag, s0, d_s0_sum)
+    insert_edge!(dag, s1, d_s1_sum)
 
-    insert_edge!(graph, d_s0_sum, sum_node)
-    insert_edge!(graph, d_s1_sum, sum_node)
+    insert_edge!(dag, d_s0_sum, sum_node)
+    insert_edge!(dag, d_s1_sum, sum_node)
 
-    insert_edge!(graph, sum_node, d_exit)
+    insert_edge!(dag, sum_node, d_exit)
 
     input = [gen_process_input(process) for _ in 1:1000]
 
-    compton_function = get_compute_function(graph, process, machine, @__MODULE__)
+    compton_function = get_compute_function(dag, process, machine, @__MODULE__)
     @test isapprox(compton_function.(input), compton_groundtruth.(input))
 
-    graph_generated = graph(process)
+    dag_generated = graph(process)
 
-    compton_function = get_compute_function(graph_generated, process, machine, @__MODULE__)
+    compton_function = get_compute_function(dag_generated, process, machine, @__MODULE__)
     @test isapprox(compton_function.(input), compton_groundtruth.(input))
 end
 =#
 
 @testset "Equal results after optimization" for optimizer in [
-    ReductionOptimizer(), RandomWalkOptimizer(MersenneTwister(0))
-]
+        ReductionOptimizer(), RandomWalkOptimizer(MersenneTwister(0)),
+    ]
     @testset "Process $proc_str" for proc_str in ["ke->ke", "ke->kke", "ke->kkke"]
         model = QEDModel()
         process = parse_process(proc_str, model)
         machine = cpu_st()
-        graph = graph(process)
+        dag = graph(process)
 
-        compute_function = get_compute_function(graph, process, machine, @__MODULE__)
+        compute_function = get_compute_function(dag, process, machine, @__MODULE__)
 
         if (typeof(optimizer) <: RandomWalkOptimizer)
-            optimize!(optimizer, graph, 100)
+            optimize!(optimizer, dag, 100)
         elseif (typeof(optimizer) <: ReductionOptimizer)
-            optimize_to_fixpoint!(optimizer, graph)
+            optimize_to_fixpoint!(optimizer, dag)
         end
         reduced_compute_function = get_compute_function(
-            graph, process, machine, @__MODULE__
+            dag, process, machine, @__MODULE__
         )
 
         input = [gen_process_input(process) for _ in 1:100]

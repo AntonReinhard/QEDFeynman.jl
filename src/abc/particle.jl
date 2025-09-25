@@ -2,7 +2,7 @@ using StaticArrays
 
 """
     mass(t::Type{T}) where {T <: ABCParticle}
-    
+
 Return the mass (at rest) of the given particle type.
 """
 QEDbase.mass(p::ABCParticle) = mass(typeof(p))
@@ -15,23 +15,23 @@ QEDbase.mass(::Type{ParticleC}) = 0.0
     interaction_result(
         p1::AbstractParticleStateful{<:ParticleDirection, <:ABCParticle},
         p2::AbstractParticleStateful{<:ParticleDirection, <:ABCParticle},
-    ) 
+    )
 
 For 2 given (non-equal) particle types, return the third of ABC.
 """
 function interaction_result(
-    p1::AbstractParticleStateful{<:ParticleDirection,<:ABCParticle},
-    p2::AbstractParticleStateful{<:ParticleDirection,<:ABCParticle},
-)
+        p1::AbstractParticleStateful{<:ParticleDirection, <:ABCParticle},
+        p2::AbstractParticleStateful{<:ParticleDirection, <:ABCParticle},
+    )
     PS_T = parameterless(typeof(p1))
     MOM_T = typeof(momentum(p1))
     @assert particle_species(p1) != particle_species(p2)
     if particle_species(p1) != ParticleA() && particle_species(p2) != ParticleA()
-        return PS_T{Outgoing,ParticleA,MOM_T}
+        return PS_T{Outgoing, ParticleA, MOM_T}
     elseif particle_species(p1) != ParticleB() && particle_species(p2) != ParticleB()
-        return PS_T{Outgoing,ParticleB,MOM_T}
+        return PS_T{Outgoing, ParticleB, MOM_T}
     else
-        return PS_T{Outgoing,ParticleC,MOM_T}
+        return PS_T{Outgoing, ParticleC, MOM_T}
     end
 end
 
@@ -42,12 +42,12 @@ Return a Vector of the possible types of particle in the [`ABCModel`](@ref).
 """
 function types(::ABCModel)
     return [
-        ParticleStateful{Incoming,ParticleA,SFourMomentum},
-        ParticleStateful{Incoming,ParticleB,SFourMomentum},
-        ParticleStateful{Incoming,ParticleC,SFourMomentum},
-        ParticleStateful{Outgoing,ParticleA,SFourMomentum},
-        ParticleStateful{Outgoing,ParticleB,SFourMomentum},
-        ParticleStateful{Outgoing,ParticleC,SFourMomentum},
+        ParticleStateful{Incoming, ParticleA, SFourMomentum},
+        ParticleStateful{Incoming, ParticleB, SFourMomentum},
+        ParticleStateful{Incoming, ParticleC, SFourMomentum},
+        ParticleStateful{Outgoing, ParticleA, SFourMomentum},
+        ParticleStateful{Outgoing, ParticleB, SFourMomentum},
+        ParticleStateful{Outgoing, ParticleC, SFourMomentum},
     ]
 end
 
@@ -58,7 +58,7 @@ Return the square of the particle's momentum as a `Float` value.
 
 Takes 7 effective FLOP.
 """
-function square(p::AbstractParticleStateful{<:ParticleDirection,<:ABCParticle})
+function square(p::AbstractParticleStateful{<:ParticleDirection, <:ABCParticle})
     return getMass2(momentum(p))
 end
 
@@ -69,7 +69,7 @@ Return the factor of the inner edge with the given (virtual) particle.
 
 Takes 10 effective FLOP. (3 here + 7 in square(p))
 """
-function ABC_inner_edge(p::AbstractParticleStateful{<:ParticleDirection,<:ABCParticle})
+function ABC_inner_edge(p::AbstractParticleStateful{<:ParticleDirection, <:ABCParticle})
     res = 1.0 / (square(p) - mass(particle_species(p))^2)
     return res
 end
@@ -81,7 +81,7 @@ Return the factor of the outer edge with the given (real) particle.
 
 Takes 0 effective FLOP.
 """
-function ABC_outer_edge(::AbstractParticleStateful{D,<:ABCParticle}) where {D}
+function ABC_outer_edge(::AbstractParticleStateful{D, <:ABCParticle}) where {D}
     return 1.0
 end
 
@@ -106,9 +106,9 @@ Calculate and return a new particle from two given interacting ones at a vertex.
 Takes 4 effective FLOP.
 """
 function ABC_conserve_momentum(
-    p1::AbstractParticleStateful{<:ParticleDirection,<:ABCParticle},
-    p2::AbstractParticleStateful{<:ParticleDirection,<:ABCParticle},
-)
+        p1::AbstractParticleStateful{<:ParticleDirection, <:ABCParticle},
+        p2::AbstractParticleStateful{<:ParticleDirection, <:ABCParticle},
+    )
     t3 = interaction_result(p1, p2)
     p1_mom = momentum(p1)
     if (is_outgoing(p1))
@@ -130,23 +130,23 @@ model(::GenericABCProcess) = ABCModel()
 
 function type_index_from_name(::ABCModel, name::String)
     if startswith(name, "Ai")
-        return (ParticleStateful{Incoming,ParticleA,SFourMomentum}, parse(Int, name[3:end]))
+        return (ParticleStateful{Incoming, ParticleA, SFourMomentum}, parse(Int, name[3:end]))
     elseif startswith(name, "Ao")
-        return (ParticleStateful{Outgoing,ParticleA,SFourMomentum}, parse(Int, name[3:end]))
+        return (ParticleStateful{Outgoing, ParticleA, SFourMomentum}, parse(Int, name[3:end]))
     elseif startswith(name, "Bi")
-        return (ParticleStateful{Incoming,ParticleB,SFourMomentum}, parse(Int, name[3:end]))
+        return (ParticleStateful{Incoming, ParticleB, SFourMomentum}, parse(Int, name[3:end]))
     elseif startswith(name, "Bo")
-        return (ParticleStateful{Outgoing,ParticleB,SFourMomentum}, parse(Int, name[3:end]))
+        return (ParticleStateful{Outgoing, ParticleB, SFourMomentum}, parse(Int, name[3:end]))
     elseif startswith(name, "Ci")
-        return (ParticleStateful{Incoming,ParticleC,SFourMomentum}, parse(Int, name[3:end]))
+        return (ParticleStateful{Incoming, ParticleC, SFourMomentum}, parse(Int, name[3:end]))
     elseif startswith(name, "Co")
-        return (ParticleStateful{Outgoing,ParticleC,SFourMomentum}, parse(Int, name[3:end]))
+        return (ParticleStateful{Outgoing, ParticleC, SFourMomentum}, parse(Int, name[3:end]))
     else
         throw("Invalid name for a particle in the ABC model")
     end
 end
 
-function String(::Type{PS}) where {DIR,P<:ABCParticle,PS<:AbstractParticleStateful{DIR,P}}
+function String(::Type{PS}) where {DIR, P <: ABCParticle, PS <: AbstractParticleStateful{DIR, P}}
     return String(P)
 end
 function String(::Type{ParticleA})
@@ -166,7 +166,7 @@ function ComputableDAGs.input_type(p::GenericABCProcess)
     return AbstractPhaseSpacePoint{
         typeof(p),
         PerturbativeABC,
-        PhasespaceDefinition{SphericalCoordinateSystem,ElectronRestFrame},
+        PhasespaceDefinition{SphericalCoordinateSystem, ElectronRestFrame},
         <:Tuple{in_t...},
         <:Tuple{out_t...},
     }

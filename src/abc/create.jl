@@ -7,20 +7,20 @@ ComputeTaskABC_Sum() = ComputeTaskABC_Sum(0)
 
 function _svector_from_type_in(processDescription::GenericABCProcess, type, particles)
     if haskey(incoming_particles(processDescription), type)
-        return SVector{incoming_particles(processDescription)[type],type}(
+        return SVector{incoming_particles(processDescription)[type], type}(
             filter(x -> typeof(x) <: type, particles)
         )
     end
-    return SVector{0,type}()
+    return SVector{0, type}()
 end
 
 function _svector_from_type_out(processDescription::GenericABCProcess, type, particles)
     if haskey(outgoing_particles(processDescription), type)
-        return SVector{outgoing_particles(processDescription)[type],type}(
+        return SVector{outgoing_particles(processDescription)[type], type}(
             filter(x -> typeof(x) <: type, particles)
         )
     end
-    return SVector{0,type}()
+    return SVector{0, type}()
 end
 
 """

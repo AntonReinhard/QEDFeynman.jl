@@ -48,13 +48,13 @@ function ground_truth_graph_result(input::PhaseSpacePoint)
         Incoming(),
         ParticleC(),
         -momentum(input, Outgoing(), ParticleA()) -
-        momentum(input, Outgoing(), ParticleB()),
+            momentum(input, Outgoing(), ParticleB()),
     )
     diagram2_Cp = ParticleStateful(
         Incoming(),
         ParticleC(),
         -momentum(input, Outgoing(), ParticleA()) +
-        momentum(input, Incoming(), ParticleB()),
+            momentum(input, Incoming(), ParticleB()),
     )
 
     check_particle_reverse_moment(momentum(diagram1_Cp), momentum(diagram1_C))
@@ -96,7 +96,7 @@ expected_result = ground_truth_graph_result(particles_2_2)
         graph = parse_dag(joinpath(@__DIR__, "..", "input", "AB->AB.txt"), process_2_2)
 
         func = get_compute_function(graph, process_2_2, machine, @__MODULE__)
-        @test isapprox(func(particles_2_2), expected_result; rtol=RTOL)
+        @test isapprox(func(particles_2_2), expected_result; rtol = RTOL)
     end
 end
 
@@ -108,7 +108,7 @@ end
         @test is_valid(graph)
 
         func = get_compute_function(graph, process_2_2, machine, @__MODULE__)
-        @test isapprox(func(particles_2_2), expected_result; rtol=RTOL)
+        @test isapprox(func(particles_2_2), expected_result; rtol = RTOL)
 
         # graph should be fully scheduled after being executed
         @test is_scheduled(graph)
@@ -129,7 +129,7 @@ expected_result = groundtruth_func(particles_2_4)
         graph = parse_dag(joinpath(@__DIR__, "..", "input", "AB->ABBB.txt"), process_2_4)
 
         func = get_compute_function(graph, process_2_4, machine, @__MODULE__)
-        @test isapprox(func(particles_2_4), expected_result; rtol=RTOL)
+        @test isapprox(func(particles_2_4), expected_result; rtol = RTOL)
     end
 end
 
@@ -161,6 +161,6 @@ end
         @test is_valid(graph)
 
         func = get_compute_function(graph, process, machine, @__MODULE__)
-        @test isapprox(func.(inputs), gt; rtol=RTOL)
+        @test isapprox(func.(inputs), gt; rtol = RTOL)
     end
 end

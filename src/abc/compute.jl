@@ -6,8 +6,8 @@ construction_string(::ParticleB) = "ParticleB()"
 construction_string(::ParticleC) = "ParticleC()"
 
 function ComputableDAGs.input_expr(
-    instance::GenericABCProcess, name::String, psp_symbol::Symbol
-)
+        instance::GenericABCProcess, name::String, psp_symbol::Symbol
+    )
     (type, index) = type_index_from_name(ABCModel(), name)
 
     return Meta.parse(
@@ -26,8 +26,8 @@ Compute an outer edge. Return the particle value with the same particle and the 
 1 FLOP.
 """
 function ComputableDAGs.compute(
-    ::ComputeTaskABC_U, data::ParticleValue{P}
-)::ParticleValue{P} where {P}
+        ::ComputeTaskABC_U, data::ParticleValue{P}
+    )::ParticleValue{P} where {P}
     return ParticleValue(data.p, data.v * ABC_outer_edge(data.p))
 end
 
@@ -39,8 +39,8 @@ Compute a vertex. Preserve momentum and particle types (AB->C etc.) to create re
 6 FLOP.
 """
 function ComputableDAGs.compute(
-    ::ComputeTaskABC_V, data1::ParticleValue{P1}, data2::ParticleValue{P2}
-)::ParticleValue where {P1,P2}
+        ::ComputeTaskABC_V, data1::ParticleValue{P1}, data2::ParticleValue{P2}
+    )::ParticleValue where {P1, P2}
     p3 = ABC_conserve_momentum(data1.p, data2.p)
     dataOut = ParticleValue(p3, data1.v * ABC_vertex() * data2.v)
     return dataOut
@@ -56,8 +56,8 @@ For valid inputs, both input particles should have the same momenta at this poin
 12 FLOP.
 """
 function ComputableDAGs.compute(
-    ::ComputeTaskABC_S2, data1::ParticleValue{P}, data2::ParticleValue{P}
-)::Float64 where {P}
+        ::ComputeTaskABC_S2, data1::ParticleValue{P}, data2::ParticleValue{P}
+    )::Float64 where {P}
     #=
     @assert isapprox(abs(data1.p.momentum.E), abs(data2.p.momentum.E), rtol = 0.001, atol = sqrt(eps())) "E: $(data1.p.momentum.E) vs. $(data2.p.momentum.E)"
     @assert isapprox(data1.p.momentum.px, -data2.p.momentum.px, rtol = 0.001, atol = sqrt(eps())) "px: $(data1.p.momentum.px) vs. $(data2.p.momentum.px)"

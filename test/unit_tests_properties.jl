@@ -10,11 +10,11 @@ prop = GraphProperties()
 @test prop.number_of_edges == 0.0
 
 prop2 = (
-    data=5.0,
-    compute_effort=6.0,
-    compute_intensity=6.0 / 5.0,
-    number_of_nodes=2,
-    number_of_edges=3,
+    data = 5.0,
+    compute_effort = 6.0,
+    compute_intensity = 6.0 / 5.0,
+    number_of_nodes = 2,
+    number_of_edges = 3,
 )::GraphProperties
 
 @test prop + prop2 == prop2
@@ -30,11 +30,11 @@ neg_prop = -prop2
 @test neg_prop + prop2 == GraphProperties()
 
 prop3 = (
-    data=7.0,
-    compute_effort=3.0,
-    compute_intensity=7.0 / 3.0,
-    number_of_nodes=-3,
-    number_of_edges=2,
+    data = 7.0,
+    compute_effort = 3.0,
+    compute_intensity = 7.0 / 3.0,
+    number_of_nodes = -3,
+    number_of_edges = 2,
 )::GraphProperties
 
 prop_sum = prop2 + prop3

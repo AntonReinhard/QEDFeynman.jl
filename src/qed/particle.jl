@@ -9,19 +9,19 @@ QEDbase.is_incoming(::Type{<:ParticleStateful{Outgoing}}) = false
 QEDbase.is_outgoing(::Type{<:ParticleStateful{Incoming}}) = false
 
 function QEDbase.particle_direction(
-    ::Type{<:ParticleStateful{DIR}}
-) where {DIR<:ParticleDirection}
+        ::Type{<:ParticleStateful{DIR}}
+    ) where {DIR <: ParticleDirection}
     return DIR()
 end
 function QEDbase.particle_species(
-    ::Type{<:ParticleStateful{DIR,SPECIES}}
-) where {DIR<:ParticleDirection,SPECIES<:AbstractParticleType}
+        ::Type{<:ParticleStateful{DIR, SPECIES}}
+    ) where {DIR <: ParticleDirection, SPECIES <: AbstractParticleType}
     return SPECIES()
 end
 
 function spin_or_pol(
-    process::ScatteringProcess, type::Type{ParticleStateful{DIR,SPECIES,EL}}, n::Int
-) where {DIR<:ParticleDirection,SPECIES<:AbstractParticleType,EL<:AbstractFourMomentum}
+        process::ScatteringProcess, type::Type{ParticleStateful{DIR, SPECIES, EL}}, n::Int
+    ) where {DIR <: ParticleDirection, SPECIES <: AbstractParticleType, EL <: AbstractFourMomentum}
     i = 0
     c = n
     for p in particles(process, DIR())
@@ -51,59 +51,59 @@ function ComputableDAGs.input_type(p::ScatteringProcess)
     return AbstractPhaseSpacePoint{
         typeof(p),
         PerturbativeQED,
-        PhasespaceDefinition{SphericalCoordinateSystem,ElectronRestFrame},
+        PhasespaceDefinition{SphericalCoordinateSystem, ElectronRestFrame},
         <:Tuple{in_t...},
         <:Tuple{out_t...},
     }
 end
 
-ValueType = Union{BiSpinor,AdjointBiSpinor,DiracMatrix,SLorentzVector{Float64},ComplexF64}
+ValueType = Union{BiSpinor, AdjointBiSpinor, DiracMatrix, SLorentzVector{Float64}, ComplexF64}
 APS = AbstractParticleStateful
 
 # incoming vs. outgoing of same fermion makes photon
 function interaction_result(
-    p1::APS{Incoming,P}, ::APS{Outgoing,P}
-) where {P<:Union{Electron,Positron}}
-    return parameterless(typeof(p1)){Incoming,Photon,typeof(momentum(p1))}
+        p1::APS{Incoming, P}, ::APS{Outgoing, P}
+    ) where {P <: Union{Electron, Positron}}
+    return parameterless(typeof(p1)){Incoming, Photon, typeof(momentum(p1))}
 end
 function interaction_result(
-    p1::APS{Outgoing,P}, ::APS{Incoming,P}
-) where {P<:Union{Electron,Positron}}
-    return parameterless(typeof(p1)){Incoming,Photon,typeof(momentum(p1))}
+        p1::APS{Outgoing, P}, ::APS{Incoming, P}
+    ) where {P <: Union{Electron, Positron}}
+    return parameterless(typeof(p1)){Incoming, Photon, typeof(momentum(p1))}
 end
 
 # electron + positron of same direction makes photon
 function interaction_result(
-    p1::APS{D,Electron}, ::APS{D,Positron}
-) where {D<:ParticleDirection}
-    return parameterless(typeof(p1)){Incoming,Photon,typeof(momentum(p1))}
+        p1::APS{D, Electron}, ::APS{D, Positron}
+    ) where {D <: ParticleDirection}
+    return parameterless(typeof(p1)){Incoming, Photon, typeof(momentum(p1))}
 end
 
 # electron/positron + photon makes the same fermion again in reverse direction
 function interaction_result(
-    p1::APS{<:ParticleDirection,P}, ::APS{<:ParticleDirection,Photon}
-) where {P<:Union{Electron,Positron}}
+        p1::APS{<:ParticleDirection, P}, ::APS{<:ParticleDirection, Photon}
+    ) where {P <: Union{Electron, Positron}}
     return parameterless(typeof(p1)){
-        typeof(reverse(particle_direction(p1))),P,typeof(momentum(p1))
+        typeof(reverse(particle_direction(p1))), P, typeof(momentum(p1)),
     }
 end
 
 # commutativity (photon always on right side, positron on right side as long as the other isn't a photon to prevent infinite recursion)
 function interaction_result(
-    p1::APS{<:ParticleDirection,Positron},
-    p2::APS{<:ParticleDirection,<:Union{Electron,Positron}},
-)
+        p1::APS{<:ParticleDirection, Positron},
+        p2::APS{<:ParticleDirection, <:Union{Electron, Positron}},
+    )
     return interaction_result(p2, p1)
 end
-function interaction_result(p1::APS{<:ParticleDirection,Photon}, p2::APS)
+function interaction_result(p1::APS{<:ParticleDirection, Photon}, p2::APS)
     return interaction_result(p2, p1)
 end
 
 # but prevent stack overflow
 function interaction_result(
-    p1::APS{<:ParticleDirection,Photon}, p2::APS{<:ParticleDirection,Photon}
-)
-    @assert false "Invalid interaction between particles $p1 and $p2"
+        p1::APS{<:ParticleDirection, Photon}, p2::APS{<:ParticleDirection, Photon}
+    )
+    return @assert false "Invalid interaction between particles $p1 and $p2"
 end
 
 """
@@ -113,12 +113,12 @@ Return a Vector of the possible types of particle in the [`QEDModel`](@ref).
 """
 function types(::QEDModel)
     return [
-        ParticleStateful{Incoming,Photon,SFourMomentum},
-        ParticleStateful{Outgoing,Photon,SFourMomentum},
-        ParticleStateful{Incoming,Electron,SFourMomentum},
-        ParticleStateful{Outgoing,Electron,SFourMomentum},
-        ParticleStateful{Incoming,Positron,SFourMomentum},
-        ParticleStateful{Outgoing,Positron,SFourMomentum},
+        ParticleStateful{Incoming, Photon, SFourMomentum},
+        ParticleStateful{Outgoing, Photon, SFourMomentum},
+        ParticleStateful{Incoming, Electron, SFourMomentum},
+        ParticleStateful{Outgoing, Electron, SFourMomentum},
+        ParticleStateful{Incoming, Positron, SFourMomentum},
+        ParticleStateful{Outgoing, Positron, SFourMomentum},
     ]
 end
 
@@ -135,13 +135,13 @@ String(::Type{SpinDown}) = "spindown"
 String(::Incoming) = "i"
 String(::Outgoing) = "o"
 
-function String(::Type{<:ParticleStateful{DIR,Photon}}) where {DIR<:ParticleDirection}
+function String(::Type{<:ParticleStateful{DIR, Photon}}) where {DIR <: ParticleDirection}
     return "k"
 end
-function String(::Type{<:ParticleStateful{DIR,Electron}}) where {DIR<:ParticleDirection}
+function String(::Type{<:ParticleStateful{DIR, Electron}}) where {DIR <: ParticleDirection}
     return "e"
 end
-function String(::Type{<:ParticleStateful{DIR,Positron}}) where {DIR<:ParticleDirection}
+function String(::Type{<:ParticleStateful{DIR, Positron}}) where {DIR <: ParticleDirection}
     return "p"
 end
 
@@ -153,13 +153,13 @@ For two given `ParticleStateful` types, return whether they can interact at a ve
 See also: [`issame`](@ref) and [`interaction_result`](@ref)
 """
 function caninteract(
-    T1::Type{<:ParticleStateful{D1,S1}}, T2::Type{<:ParticleStateful{D2,S2}}
-) where {
-    D1<:ParticleDirection,
-    S1<:AbstractParticleType,
-    D2<:ParticleDirection,
-    S2<:AbstractParticleType,
-}
+        T1::Type{<:ParticleStateful{D1, S1}}, T2::Type{<:ParticleStateful{D2, S2}}
+    ) where {
+        D1 <: ParticleDirection,
+        S1 <: AbstractParticleType,
+        D2 <: ParticleDirection,
+        S2 <: AbstractParticleType,
+    }
     if (T1 == T2)
         return false
     end
@@ -169,15 +169,15 @@ function caninteract(
 
     for (P1, P2) in [(T1, T2), (T2, T1)]
         if (
-            P1 <: ParticleStateful{Incoming,Electron} &&
-            P2 <: ParticleStateful{Outgoing,Positron}
-        )
+                P1 <: ParticleStateful{Incoming, Electron} &&
+                    P2 <: ParticleStateful{Outgoing, Positron}
+            )
             return false
         end
         if (
-            P1 <: ParticleStateful{Outgoing,Electron} &&
-            P2 <: ParticleStateful{Incoming,Positron}
-        )
+                P1 <: ParticleStateful{Outgoing, Electron} &&
+                    P2 <: ParticleStateful{Incoming, Positron}
+            )
             return false
         end
     end
@@ -187,17 +187,17 @@ end
 
 function type_index_from_name(::QEDModel, name::String)
     if startswith(name, "ki")
-        return (ParticleStateful{Incoming,Photon,SFourMomentum}, parse(Int, name[3:end]))
+        return (ParticleStateful{Incoming, Photon, SFourMomentum}, parse(Int, name[3:end]))
     elseif startswith(name, "ko")
-        return (ParticleStateful{Outgoing,Photon,SFourMomentum}, parse(Int, name[3:end]))
+        return (ParticleStateful{Outgoing, Photon, SFourMomentum}, parse(Int, name[3:end]))
     elseif startswith(name, "ei")
-        return (ParticleStateful{Incoming,Electron,SFourMomentum}, parse(Int, name[3:end]))
+        return (ParticleStateful{Incoming, Electron, SFourMomentum}, parse(Int, name[3:end]))
     elseif startswith(name, "eo")
-        return (ParticleStateful{Outgoing,Electron,SFourMomentum}, parse(Int, name[3:end]))
+        return (ParticleStateful{Outgoing, Electron, SFourMomentum}, parse(Int, name[3:end]))
     elseif startswith(name, "pi")
-        return (ParticleStateful{Incoming,Positron,SFourMomentum}, parse(Int, name[3:end]))
+        return (ParticleStateful{Incoming, Positron, SFourMomentum}, parse(Int, name[3:end]))
     elseif startswith(name, "po")
-        return (ParticleStateful{Outgoing,Positron,SFourMomentum}, parse(Int, name[3:end]))
+        return (ParticleStateful{Outgoing, Positron, SFourMomentum}, parse(Int, name[3:end]))
     else
         throw("Invalid name for a particle in the QED model")
     end
@@ -272,8 +272,8 @@ model(::ScatteringProcess) = QEDModel()
 model(::PhaseSpacePoint) = QEDModel()
 
 function get_particle(
-    input::PhaseSpacePoint, t::Type{ParticleStateful{DIR,SPECIES}}, n::Int
-) where {DIR<:ParticleDirection,SPECIES<:AbstractParticleType}
+        input::PhaseSpacePoint, t::Type{ParticleStateful{DIR, SPECIES}}, n::Int
+    ) where {DIR <: ParticleDirection, SPECIES <: AbstractParticleType}
     i = 0
     for p in particles(input, DIR())
         if p isa t
@@ -283,5 +283,5 @@ function get_particle(
             end
         end
     end
-    @assert false "Invalid type given"
+    return @assert false "Invalid type given"
 end

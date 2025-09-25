@@ -63,7 +63,7 @@ Read an ABC-model process from the given file. If `verbose` is set to true, prin
 
 Returns a valid `DAG`.
 """
-function parse_dag(filename::AbstractString, proc::GenericABCProcess, verbose::Bool=false)
+function parse_dag(filename::AbstractString, proc::GenericABCProcess, verbose::Bool = false)
     file = open(filename, "r")
 
     if (verbose)
@@ -106,7 +106,7 @@ function parse_dag(filename::AbstractString, proc::GenericABCProcess, verbose::B
         if (number_of_nodes % 100 == 0)
             if (verbose)
                 percent = string(
-                    round(100.0 * number_of_nodes / nodesToRead; digits=2), "%"
+                    round(100.0 * number_of_nodes / nodesToRead; digits = 2), "%"
                 )
                 print("\rReading Nodes... $percent")
             end
@@ -197,14 +197,6 @@ function parse_dag(filename::AbstractString, proc::GenericABCProcess, verbose::B
             @assert false ("Unknown node '$node' while reading from file $filename")
         end
     end
-
-    #put all nodes into dirty nodes set
-    graph.dirty_nodes = copy(graph.nodes)
-
-    if (verbose)
-        println("Generating the graph's properties")
-    end
-    graph.properties = GraphProperties(graph)
 
     if (verbose)
         println("Done")

@@ -5,8 +5,8 @@
     GenericABCProcess <: AbstractProcessDefinition
 
 """
-struct GenericABCProcess{INT,OUTT} <:
-       AbstractProcessDefinition where {INT<:Tuple,OUTT<:Tuple}
+struct GenericABCProcess{INT, OUTT} <:
+    AbstractProcessDefinition where {INT <: Tuple, OUTT <: Tuple}
     incoming_particles::INT
     outgoing_particles::OUTT
 
@@ -19,12 +19,12 @@ struct GenericABCProcess{INT,OUTT} <:
     Constructor for a GenericABCProcess with the given incoming and outgoing particles.
     """
     function GenericABCProcess(
-        incoming_particles::INT, outgoing_particles::OUTT
-    ) where {INT<:Tuple,OUTT<:Tuple}
+            incoming_particles::INT, outgoing_particles::OUTT
+        ) where {INT <: Tuple, OUTT <: Tuple}
         _assert_particle_type_tuple(incoming_particles)
         _assert_particle_type_tuple(outgoing_particles)
 
-        return new{INT,OUTT}(incoming_particles, outgoing_particles)
+        return new{INT, OUTT}(incoming_particles, outgoing_particles)
     end
 end
 
@@ -42,7 +42,7 @@ function QEDbase.outgoing_spin_pols(proc::GenericABCProcess)
 end
 
 _assert_particle_type_tuple(::Tuple{}) = nothing
-function _assert_particle_type_tuple(t::Tuple{ABCParticle,Vararg})
+function _assert_particle_type_tuple(t::Tuple{ABCParticle, Vararg})
     return _assert_particle_type_tuple(t[2:end])
 end
 function _assert_particle_type_tuple(t::Any)

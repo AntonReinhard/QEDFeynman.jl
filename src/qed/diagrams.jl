@@ -42,9 +42,9 @@ The [`FeynmanTie`](@ref) represents the final inner edge of the diagram.
 """
 struct FeynmanDiagram
     vertices::Vector{Set{FeynmanVertex}}
-    tie::Ref{Union{FeynmanTie,Missing}}
+    tie::Ref{Union{FeynmanTie, Missing}}
     particles::Vector{FeynmanParticle}
-    type_ids::Dict{Type,Int64} # lut for number of used ids for a particle type
+    type_ids::Dict{Type, Int64} # lut for number of used ids for a particle type
 end
 
 """
@@ -57,7 +57,7 @@ Use [`gen_diagrams`](@ref) to generate all possible diagrams from this one.
 function FeynmanDiagram(pd::ScatteringProcess)
     parts = Vector{FeynmanParticle}()
 
-    ids = Dict{Type,Int64}()
+    ids = Dict{Type, Int64}()
     for type in types(model(pd))
         for i in 1:number_particles(pd, type)
             push!(parts, FeynmanParticle(type, i))
@@ -70,7 +70,7 @@ end
 
 function particle_after_tie(p::FeynmanParticle, t::FeynmanTie)
     if p == t.in1 || p == t.in2
-        return FeynmanParticle(ParticleStateful{Incoming,Electron,SFourMomentum}, -1) # placeholder particle and id for tied particles
+        return FeynmanParticle(ParticleStateful{Incoming, Electron, SFourMomentum}, -1) # placeholder particle and id for tied particles
     end
     return p
 end
@@ -96,8 +96,8 @@ function vertex_set_after_tie(vs::Set{FeynmanVertex}, t::Missing)
 end
 
 function vertex_set_after_tie(
-    vs::Set{FeynmanVertex}, t1::Union{FeynmanTie,Missing}, t2::Union{FeynmanTie,Missing}
-)
+        vs::Set{FeynmanVertex}, t1::Union{FeynmanTie, Missing}, t2::Union{FeynmanTie, Missing}
+    )
     return Set{FeynmanVertex}(vertex_after_tie(vertex_after_tie(v, t1), t2) for v in vs)
 end
 
@@ -132,7 +132,7 @@ end
 
 function ==(d1::FeynmanDiagram, d2::FeynmanDiagram)
     if (!ismissing(d1.tie[]) && ismissing(d2.tie[])) ||
-        (ismissing(d1.tie[]) && !ismissing(d2.tie[]))
+            (ismissing(d1.tie[]) && !ismissing(d2.tie[]))
         return false
     end
     if d1.particles != d2.particles
@@ -145,7 +145,7 @@ function ==(d1::FeynmanDiagram, d2::FeynmanDiagram)
     # TODO can i prove that this works?
     for (v1, v2) in zip(d1.vertices, d2.vertices)
         if vertex_set_after_tie(v1, d1.tie[], d2.tie[]) !=
-            vertex_set_after_tie(v2, d1.tie[], d2.tie[])
+                vertex_set_after_tie(v2, d1.tie[], d2.tie[])
             return false
         end
     end
@@ -227,7 +227,7 @@ end
 
 Return a vector of the particles after applying the vertices and tie of the diagram up to the given level. If no level is given, apply all. The tie comes last and is its own "level".
 """
-function get_particles(fd::FeynmanDiagram, level::Int=-1)
+function get_particles(fd::FeynmanDiagram, level::Int = -1)
     if level == -1
         level = length(fd.vertices) + 1
     end
@@ -449,12 +449,12 @@ end
 Returns true iff the given feynman diagram is an (empty) diagram of a compton process like ke->k^ne
 """
 function is_compton(fd::FeynmanDiagram)
-    return fd.type_ids[ParticleStateful{Incoming,Electron,SFourMomentum}] == 1 &&
-           fd.type_ids[ParticleStateful{Outgoing,Electron,SFourMomentum}] == 1 &&
-           fd.type_ids[ParticleStateful{Incoming,Positron,SFourMomentum}] == 0 &&
-           fd.type_ids[ParticleStateful{Outgoing,Positron,SFourMomentum}] == 0 &&
-           fd.type_ids[ParticleStateful{Incoming,Photon,SFourMomentum}] >= 1 &&
-           fd.type_ids[ParticleStateful{Outgoing,Photon,SFourMomentum}] >= 1
+    return fd.type_ids[ParticleStateful{Incoming, Electron, SFourMomentum}] == 1 &&
+        fd.type_ids[ParticleStateful{Outgoing, Electron, SFourMomentum}] == 1 &&
+        fd.type_ids[ParticleStateful{Incoming, Positron, SFourMomentum}] == 0 &&
+        fd.type_ids[ParticleStateful{Outgoing, Positron, SFourMomentum}] == 0 &&
+        fd.type_ids[ParticleStateful{Incoming, Photon, SFourMomentum}] >= 1 &&
+        fd.type_ids[ParticleStateful{Outgoing, Photon, SFourMomentum}] >= 1
 end
 
 """
@@ -464,19 +464,19 @@ Helper function for [`gen_compton_diagrams`](@ref). Generates a single diagram f
 """
 function gen_compton_diagram_from_order(order::Vector{Int}, inFerm, outFerm, n::Int, m::Int)
     photons = vcat(
-        [FeynmanParticle(ParticleStateful{Incoming,Photon,SFourMomentum}, i) for i in 1:n],
-        [FeynmanParticle(ParticleStateful{Outgoing,Photon,SFourMomentum}, i) for i in 1:m],
+        [FeynmanParticle(ParticleStateful{Incoming, Photon, SFourMomentum}, i) for i in 1:n],
+        [FeynmanParticle(ParticleStateful{Outgoing, Photon, SFourMomentum}, i) for i in 1:m],
     )
 
     new_diagram = FeynmanDiagram(
         [],
         missing,
         [inFerm, outFerm, photons...],
-        Dict{Type,Int64}(
-            ParticleStateful{Incoming,Electron,SFourMomentum} => 1,
-            ParticleStateful{Outgoing,Electron,SFourMomentum} => 1,
-            ParticleStateful{Incoming,Photon,SFourMomentum} => n,
-            ParticleStateful{Outgoing,Photon,SFourMomentum} => m,
+        Dict{Type, Int64}(
+            ParticleStateful{Incoming, Electron, SFourMomentum} => 1,
+            ParticleStateful{Outgoing, Electron, SFourMomentum} => 1,
+            ParticleStateful{Incoming, Photon, SFourMomentum} => n,
+            ParticleStateful{Outgoing, Photon, SFourMomentum} => m,
         ),
     )
 
@@ -488,10 +488,10 @@ function gen_compton_diagram_from_order(order::Vector{Int}, inFerm, outFerm, n::
     while left_index <= right_index
         # left side
         v_left = FeynmanVertex(
-            FeynmanParticle(ParticleStateful{Incoming,Electron,SFourMomentum}, iterations),
+            FeynmanParticle(ParticleStateful{Incoming, Electron, SFourMomentum}, iterations),
             photons[order[left_index]],
             FeynmanParticle(
-                ParticleStateful{Incoming,Electron,SFourMomentum}, iterations + 1
+                ParticleStateful{Incoming, Electron, SFourMomentum}, iterations + 1
             ),
         )
         left_index += 1
@@ -503,10 +503,10 @@ function gen_compton_diagram_from_order(order::Vector{Int}, inFerm, outFerm, n::
 
         # right side
         v_right = FeynmanVertex(
-            FeynmanParticle(ParticleStateful{Outgoing,Electron,SFourMomentum}, iterations),
+            FeynmanParticle(ParticleStateful{Outgoing, Electron, SFourMomentum}, iterations),
             photons[order[right_index]],
             FeynmanParticle(
-                ParticleStateful{Outgoing,Electron,SFourMomentum}, iterations + 1
+                ParticleStateful{Outgoing, Electron, SFourMomentum}, iterations + 1
             ),
         )
         right_index -= 1
@@ -526,22 +526,22 @@ end
 Helper function for [`gen_compton_diagrams`](@ref). Generates a single diagram for the given order and n input and m output photons.
 """
 function gen_compton_diagram_from_order_one_side(
-    order::Vector{Int}, inFerm, outFerm, n::Int, m::Int
-)
+        order::Vector{Int}, inFerm, outFerm, n::Int, m::Int
+    )
     photons = vcat(
-        [FeynmanParticle(ParticleStateful{Incoming,Photon,SFourMomentum}, i) for i in 1:n],
-        [FeynmanParticle(ParticleStateful{Outgoing,Photon,SFourMomentum}, i) for i in 1:m],
+        [FeynmanParticle(ParticleStateful{Incoming, Photon, SFourMomentum}, i) for i in 1:n],
+        [FeynmanParticle(ParticleStateful{Outgoing, Photon, SFourMomentum}, i) for i in 1:m],
     )
 
     new_diagram = FeynmanDiagram(
         [],
         missing,
         [inFerm, outFerm, photons...],
-        Dict{Type,Int64}(
-            ParticleStateful{Incoming,Electron,SFourMomentum} => 1,
-            ParticleStateful{Outgoing,Electron,SFourMomentum} => 1,
-            ParticleStateful{Incoming,Photon,SFourMomentum} => n,
-            ParticleStateful{Outgoing,Photon,SFourMomentum} => m,
+        Dict{Type, Int64}(
+            ParticleStateful{Incoming, Electron, SFourMomentum} => 1,
+            ParticleStateful{Outgoing, Electron, SFourMomentum} => 1,
+            ParticleStateful{Incoming, Photon, SFourMomentum} => n,
+            ParticleStateful{Outgoing, Photon, SFourMomentum} => m,
         ),
     )
 
@@ -553,10 +553,10 @@ function gen_compton_diagram_from_order_one_side(
     while left_index <= right_index
         # left side
         v_left = FeynmanVertex(
-            FeynmanParticle(ParticleStateful{Incoming,Electron,SFourMomentum}, iterations),
+            FeynmanParticle(ParticleStateful{Incoming, Electron, SFourMomentum}, iterations),
             photons[order[left_index]],
             FeynmanParticle(
-                ParticleStateful{Incoming,Electron,SFourMomentum}, iterations + 1
+                ParticleStateful{Incoming, Electron, SFourMomentum}, iterations + 1
             ),
         )
         left_index += 1
@@ -571,11 +571,11 @@ function gen_compton_diagram_from_order_one_side(
             # right side
             v_right = FeynmanVertex(
                 FeynmanParticle(
-                    ParticleStateful{Outgoing,Electron,SFourMomentum}, iterations
+                    ParticleStateful{Outgoing, Electron, SFourMomentum}, iterations
                 ),
                 photons[order[right_index]],
                 FeynmanParticle(
-                    ParticleStateful{Outgoing,Electron,SFourMomentum}, iterations + 1
+                    ParticleStateful{Outgoing, Electron, SFourMomentum}, iterations + 1
                 ),
             )
             right_index -= 1
@@ -597,8 +597,8 @@ end
 Special case diagram generation for Compton processes, i.e., processes of the form k^ne->k^me
 """
 function gen_compton_diagrams(n::Int, m::Int)
-    inFerm = FeynmanParticle(ParticleStateful{Incoming,Electron,SFourMomentum}, 1)
-    outFerm = FeynmanParticle(ParticleStateful{Outgoing,Electron,SFourMomentum}, 1)
+    inFerm = FeynmanParticle(ParticleStateful{Incoming, Electron, SFourMomentum}, 1)
+    outFerm = FeynmanParticle(ParticleStateful{Outgoing, Electron, SFourMomentum}, 1)
 
     perms = [permutations([i for i in 1:(n + m)])...]
 
@@ -619,8 +619,8 @@ end
 Special case diagram generation for Compton processes, i.e., processes of the form k^ne->k^me, but generating from one end, yielding larger diagrams
 """
 function gen_compton_diagrams_one_side(n::Int, m::Int)
-    inFerm = FeynmanParticle(ParticleStateful{Incoming,Electron,SFourMomentum}, 1)
-    outFerm = FeynmanParticle(ParticleStateful{Outgoing,Electron,SFourMomentum}, 1)
+    inFerm = FeynmanParticle(ParticleStateful{Incoming, Electron, SFourMomentum}, 1)
+    outFerm = FeynmanParticle(ParticleStateful{Outgoing, Electron, SFourMomentum}, 1)
 
     perms = [permutations([i for i in 1:(n + m)])...]
 
@@ -643,8 +643,8 @@ From a given feynman diagram in its initial state, e.g. when created through the
 function gen_diagrams(fd::FeynmanDiagram)
     if is_compton(fd)
         return gen_compton_diagrams(
-            fd.type_ids[ParticleStateful{Incoming,Photon,SFourMomentum}],
-            fd.type_ids[ParticleStateful{Outgoing,Photon,SFourMomentum}],
+            fd.type_ids[ParticleStateful{Incoming, Photon, SFourMomentum}],
+            fd.type_ids[ParticleStateful{Outgoing, Photon, SFourMomentum}],
         )
     end
 

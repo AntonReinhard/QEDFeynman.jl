@@ -12,7 +12,7 @@ rng = [Random.MersenneTwister(0) for _ in 1:128]
 #
 # quick and dirty implementation of the RAMBO algorithm
 #
-# reference: 
+# reference:
 # * https://cds.cern.ch/record/164736/files/198601282.pdf
 # * https://www.sciencedirect.com/science/article/pii/0010465586901190
 ####################
@@ -30,7 +30,7 @@ end
 function Random.rand(rng::AbstractRNG, ::Random.SamplerType{SFourMomentum})
     return SFourMomentum(rand(rng, 4))
 end
-function Random.rand(rng::AbstractRNG, ::Random.SamplerType{NTuple{N,Float64}}) where {N}
+function Random.rand(rng::AbstractRNG, ::Random.SamplerType{NTuple{N, Float64}}) where {N}
     return Tuple(rand(rng, N))
 end
 
@@ -132,7 +132,7 @@ end
 
 first_derivative(func) = x -> ForwardDiff.derivative(func, float(x))
 
-function generate_physical_massive_moms(rng, ss, masses; x0=0.1)
+function generate_physical_massive_moms(rng, ss, masses; x0 = 0.1)
     n = length(masses)
     massless_moms = generate_physical_massless_moms(rng, ss, n)
     energies = getT.(massless_moms)

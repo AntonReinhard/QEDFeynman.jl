@@ -32,7 +32,7 @@ compute_effort(t::ComputeTaskQED_V)::Float64 = (1150.0 + 764.0 + 828.0) / 3.0
 """
     compute_effort(t::ComputeTaskQED_Sum)
 
-Return the compute effort of a Sum task. 
+Return the compute effort of a Sum task.
 
 Note: This is a constant compute effort, even though sum scales with the number of its inputs. Since there is only ever a single sum node in a graph generated from the QED-Model,
 this doesn't matter.

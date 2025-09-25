@@ -9,12 +9,12 @@ graph = parse_dag(joinpath(@__DIR__, "..", "input", "AB->ABBB.txt"), proc)
 
 # create the optimizers
 FIXPOINT_OPTIMIZERS = [
-    GreedyOptimizer(GlobalMetricEstimator()), ReductionOptimizer(), SplitOptimizer()
+    GreedyOptimizer(GlobalMetricEstimator()), ReductionOptimizer(), SplitOptimizer(),
 ]
 NO_FIXPOINT_OPTIMIZERS = [RandomWalkOptimizer(RNG)]
 
 @testset "Optimizer $optimizer" for optimizer in
-                                    vcat(NO_FIXPOINT_OPTIMIZERS, FIXPOINT_OPTIMIZERS)
+    vcat(NO_FIXPOINT_OPTIMIZERS, FIXPOINT_OPTIMIZERS)
     @test operation_stack_length(graph) == 0
     @test optimize_step!(optimizer, graph)
 

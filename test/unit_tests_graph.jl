@@ -1,87 +1,87 @@
 using QEDFeynman
 using ComputableDAGs
 
-graph = DAG()
+dag = DAG()
 
-@test length(graph.nodes) == 0
-@test length(graph.applied_operations) == 0
-@test length(graph.operations_to_apply) == 0
-@test length(graph.dirty_nodes) == 0
-@test length(graph.diff) == (addedNodes=0, removedNodes=0, addedEdges=0, removedEdges=0)
-@test length(get_operations(graph)) == (node_reductions=0, node_splits=0)
+@test length(dag.nodes) == 0
+@test length(dag.applied_operations) == 0
+@test length(dag.operations_to_apply) == 0
+@test length(dag.dirty_nodes) == 0
+@test length(dag.diff) == (added_nodes = 0, removed_nodes = 0, added_edges = 0, removed_edges = 0)
+@test length(get_operations(dag)) == (node_reductions = 0, node_splits = 0)
 
 # s to output (exit node)
-d_exit = insert_node!(graph, DataTask(10))
+d_exit = insert_node!(dag, DataTask(10))
 
-@test length(graph.nodes) == 1
-@test length(graph.dirty_nodes) == 0
+@test length(dag.nodes) == 1
+@test length(dag.dirty_nodes) == 0
 
 # final s compute
-s0 = insert_node!(graph, ComputeTaskABC_S2())
+s0 = insert_node!(dag, ComputeTaskABC_S2())
 
-@test length(graph.nodes) == 2
-@test length(graph.dirty_nodes) == 0
+@test length(dag.nodes) == 2
+@test length(dag.dirty_nodes) == 0
 
 # data from v0 and v1 to s0
-d_v0_s0 = insert_node!(graph, DataTask(5))
-d_v1_s0 = insert_node!(graph, DataTask(5))
+d_v0_s0 = insert_node!(dag, DataTask(5))
+d_v1_s0 = insert_node!(dag, DataTask(5))
 
 # v0 and v1 compute
-v0 = insert_node!(graph, ComputeTaskABC_V())
-v1 = insert_node!(graph, ComputeTaskABC_V())
+v0 = insert_node!(dag, ComputeTaskABC_V())
+v1 = insert_node!(dag, ComputeTaskABC_V())
 
 # data from uB, uA, uBp and uAp to v0 and v1
-d_uB_v0 = insert_node!(graph, DataTask(3))
-d_uA_v0 = insert_node!(graph, DataTask(3))
-d_uBp_v1 = insert_node!(graph, DataTask(3))
-d_uAp_v1 = insert_node!(graph, DataTask(3))
+d_uB_v0 = insert_node!(dag, DataTask(3))
+d_uA_v0 = insert_node!(dag, DataTask(3))
+d_uBp_v1 = insert_node!(dag, DataTask(3))
+d_uAp_v1 = insert_node!(dag, DataTask(3))
 
 # uB, uA, uBp and uAp computes
-uB = insert_node!(graph, ComputeTaskABC_U())
-uA = insert_node!(graph, ComputeTaskABC_U())
-uBp = insert_node!(graph, ComputeTaskABC_U())
-uAp = insert_node!(graph, ComputeTaskABC_U())
+uB = insert_node!(dag, ComputeTaskABC_U())
+uA = insert_node!(dag, ComputeTaskABC_U())
+uBp = insert_node!(dag, ComputeTaskABC_U())
+uAp = insert_node!(dag, ComputeTaskABC_U())
 
 # entry nodes getting data for U computes
-d_uB = insert_node!(graph, DataTask(6))
-d_uA = insert_node!(graph, DataTask(6))
-d_uBp = insert_node!(graph, DataTask(6))
-d_uAp = insert_node!(graph, DataTask(6))
+d_uB = insert_node!(dag, DataTask(6))
+d_uA = insert_node!(dag, DataTask(6))
+d_uBp = insert_node!(dag, DataTask(6))
+d_uAp = insert_node!(dag, DataTask(6))
 
-@test length(graph.nodes) == 18
-@test length(graph.dirty_nodes) == 0
+@test length(dag.nodes) == 18
+@test length(dag.dirty_nodes) == 0
 
 # now for all the edges
-insert_edge!(graph, d_uB, uB)
-insert_edge!(graph, d_uA, uA)
-insert_edge!(graph, d_uBp, uBp)
-insert_edge!(graph, d_uAp, uAp)
+insert_edge!(dag, d_uB, uB)
+insert_edge!(dag, d_uA, uA)
+insert_edge!(dag, d_uBp, uBp)
+insert_edge!(dag, d_uAp, uAp)
 
-insert_edge!(graph, uB, d_uB_v0)
-insert_edge!(graph, uA, d_uA_v0)
-insert_edge!(graph, uBp, d_uBp_v1)
-insert_edge!(graph, uAp, d_uAp_v1)
+insert_edge!(dag, uB, d_uB_v0)
+insert_edge!(dag, uA, d_uA_v0)
+insert_edge!(dag, uBp, d_uBp_v1)
+insert_edge!(dag, uAp, d_uAp_v1)
 
-insert_edge!(graph, d_uB_v0, v0)
-insert_edge!(graph, d_uA_v0, v0)
-insert_edge!(graph, d_uBp_v1, v1)
-insert_edge!(graph, d_uAp_v1, v1)
+insert_edge!(dag, d_uB_v0, v0)
+insert_edge!(dag, d_uA_v0, v0)
+insert_edge!(dag, d_uBp_v1, v1)
+insert_edge!(dag, d_uAp_v1, v1)
 
-insert_edge!(graph, v0, d_v0_s0)
-insert_edge!(graph, v1, d_v1_s0)
+insert_edge!(dag, v0, d_v0_s0)
+insert_edge!(dag, v1, d_v1_s0)
 
-insert_edge!(graph, d_v0_s0, s0)
-insert_edge!(graph, d_v1_s0, s0)
+insert_edge!(dag, d_v0_s0, s0)
+insert_edge!(dag, d_v1_s0, s0)
 
-insert_edge!(graph, s0, d_exit)
+insert_edge!(dag, s0, d_exit)
 
-@test length(graph.nodes) == 18
-@test length(graph.applied_operations) == 0
-@test length(graph.operations_to_apply) == 0
-@test length(graph.dirty_nodes) == 0
-@test length(graph.diff) == (addedNodes=0, removedNodes=0, addedEdges=0, removedEdges=0)
+@test length(dag.nodes) == 18
+@test length(dag.applied_operations) == 0
+@test length(dag.operations_to_apply) == 0
+@test length(dag.dirty_nodes) == 0
+@test length(dag.diff) == (added_nodes = 0, removed_nodes = 0, added_edges = 0, removed_edges = 0)
 
-@test is_valid(graph)
+@test is_valid(dag)
 
 @test is_entry_node(d_PB)
 @test is_entry_node(d_PA)
@@ -100,49 +100,49 @@ insert_edge!(graph, s0, d_exit)
 @test length(parents(v0)) == 1
 @test length(parents(v1)) == 1
 
-@test get_exit_node(graph) == d_exit
+@test get_exit_node(dag) == d_exit
 
 @test length(partners(s0)) == 1
 @test length(siblings(s0)) == 1
 
-operations = get_operations(graph)
-@test length(operations) == (node_reductions=0, node_splits=0)
-@test length(graph.dirty_nodes) == 0
+operations = get_operations(dag)
+@test length(operations) == (node_reductions = 0, node_splits = 0)
+@test length(dag.dirty_nodes) == 0
 
-@test operations == get_operations(graph)
+@test operations == get_operations(dag)
 
-properties = get_properties(graph)
+properties = get_properties(dag)
 @test properties.compute_effort == 28
 @test properties.data == 62
 @test properties.compute_intensity ≈ 28 / 62
 @test properties.number_of_nodes == 26
 @test properties.number_of_edges == 25
 
-operations = get_operations(graph)
-@test length(graph.dirty_nodes) == 0
+operations = get_operations(dag)
+@test length(dag.dirty_nodes) == 0
 
-@test length(operations) == (node_reductions=0, node_splits=0)
+@test length(operations) == (node_reductions = 0, node_splits = 0)
 @test isempty(operations)
-@test length(graph.dirty_nodes) == 0
-@test length(graph.nodes) == 26
-@test length(graph.applied_operations) == 0
-@test length(graph.operations_to_apply) == 0
+@test length(dag.dirty_nodes) == 0
+@test length(dag.nodes) == 26
+@test length(dag.applied_operations) == 0
+@test length(dag.operations_to_apply) == 0
 
-reset_graph!(graph)
+reset_graph!(dag)
 
-@test length(graph.dirty_nodes) == 0
-@test length(graph.nodes) == 26
-@test length(graph.applied_operations) == 0
-@test length(graph.operations_to_apply) == 0
+@test length(dag.dirty_nodes) == 0
+@test length(dag.nodes) == 26
+@test length(dag.applied_operations) == 0
+@test length(dag.operations_to_apply) == 0
 
-properties = get_properties(graph)
+properties = get_properties(dag)
 @test properties.number_of_nodes == 26
 @test properties.number_of_edges == 25
 @test properties.compute_effort == 28
 @test properties.data == 62
 @test properties.compute_intensity ≈ 28 / 62
 
-operations = get_operations(graph)
-@test length(operations) == (node_reductions=0, node_splits=0)
+operations = get_operations(dag)
+@test length(operations) == (node_reductions = 0, node_splits = 0)
 
-@test is_valid(graph)
+@test is_valid(dag)

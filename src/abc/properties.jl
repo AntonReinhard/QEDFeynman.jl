@@ -31,7 +31,7 @@ compute_effort(t::ComputeTaskABC_V)::Float64 = 6.0
 """
     compute_effort(t::ComputeTaskABC_Sum)
 
-Return the compute effort of a Sum task. 
+Return the compute effort of a Sum task.
 
 Note: This is a constant compute effort, even though sum scales with the number of its inputs. Since there is only ever a single sum node in a graph generated from the ABC-Model,
 this doesn't matter.

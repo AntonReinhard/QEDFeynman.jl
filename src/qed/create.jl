@@ -2,12 +2,12 @@ ComputeTaskQED_Sum() = ComputeTaskQED_Sum(0)
 
 function _svector_from_type(processDescription::ScatteringProcess, type, particles)
     if haskey(incoming_particles(processDescription), type)
-        return SVector{incoming_particles(processDescription)[type],type}(
+        return SVector{incoming_particles(processDescription)[type], type}(
             filter(x -> typeof(x) <: type, particles)
         )
     end
     if haskey(outgoing_particles(processDescription), type)
-        return SVector{outgoing_particles(processDescription)[type],type}(
+        return SVector{outgoing_particles(processDescription)[type], type}(
             filter(x -> typeof(x) <: type, particles)
         )
     end
